@@ -99,16 +99,21 @@ void Shuffle(vector<Cards> &deck)
 }
 short Calcscore(vector<Cards> hand)
 {
-	short score=0;
+	short score=0,numaces=0;
 	short len=hand.size();
 	for(int i=0;i<len;i++)
 	{
 		if(hand[i].GetPower()!=1)score+=hand[i].GetPower();
 		else
 		{
-			if(score+11>21)score+=1;
-			else score+=11;
+			numaces++;
+			score+=11;
 		}
+	}
+	while(numaces>0 && score>21)
+	{
+		score-=10;
+		numaces--;
 	}
 	return score;
 }
@@ -351,7 +356,11 @@ int main()
 		cout<<"Bet money for new game,0 to exit"<<endl;
 		cout<<"Current money: "<<money<<endl;
 		cin>>bet;
-		if(bet==0)new_game=0;
+		if(bet==0)
+		{
+			new_game=0;
+			break;
+		}
 		cout<<"Press y to bet for war,any key for no bet"<<endl;
 		cin>>c;
 		if(c=='y' || c=='Y')warbet=bet;
