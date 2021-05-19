@@ -4,19 +4,19 @@
 #include <algorithm>
 #include <cstdlib>
 using namespace std;
-class Cards 
+class Cards  // each card has name, suit and power on black jack
 {
 	char name;
 	short bjpower;
 	short suit;
 	public:
-	Cards(){};
-	Cards(char nam,int power)
+	Cards(){};	//default constructor just in case
+	Cards(char nam,int power)	// constuctor with parameters
 	{
 		name=nam;
 		bjpower=power;
 	}
-	short GetPower()const
+	short GetPower()const// setters and getters to keep the capsulation
 	{
 		return bjpower;
 	}
@@ -41,19 +41,19 @@ class Cards
 		suit=sui;
 	}
 };
-ostream& operator<<(ostream& out, const Cards& c)
+ostream& operator<<(ostream& out, const Cards& c) // operator overloading: printed cards should have suit and name
 {
-	 if(c.GetSuit()==0)return out<< c.GetName()<<"-C";
+	 if(c.GetSuit()==0)return out<< c.GetName()<<"-C"; // C for Clubs, D for Diamonds, H for Hearts and S for Spades 
  	 if(c.GetSuit()==1)return out<< c.GetName()<<"-D";
   	 if(c.GetSuit()==2)return out<< c.GetName()<<"-H";
    	 if(c.GetSuit()==3)return out<< c.GetName()<<"-S";
 }
-void MakeDeck(int num,vector<Cards> &deck) 
+void MakeDeck(int num,vector<Cards> &deck) //deck generating function
 {
-	for(num;num>0;num--)
+	for(num;num>0;num--) // if the number stored in num,which is the total cards, is dividable by 52, that would make num/52 decks in one
 	{
 		Cards curr;
-		switch(num%13)
+		switch(num%13) // method based on residue on division by 13
 		{
 			case 0:
 				curr.SetName('K');
@@ -81,7 +81,7 @@ void MakeDeck(int num,vector<Cards> &deck)
 		deck.push_back(curr);
 	}
 }
-void PrintDeck(vector<Cards> deck)
+void PrintDeck(vector<Cards> deck) // deck printing func for testing and for counting cards
 {
 	vector<Cards>::iterator it;
 	short br=0;
@@ -93,66 +93,64 @@ void PrintDeck(vector<Cards> deck)
 	}
 	cout<<endl;
 }
-void Shuffle(vector<Cards> &deck)
+void Shuffle(vector<Cards> &deck) // shuffle func
 {
-	random_shuffle(deck.begin(), deck.end());
+	random_shuffle(deck.begin(), deck.end()); // usage of implemented in cpp shuffle
 }
-short Calcscore(vector<Cards> hand)
+short Calcscore(vector<Cards> hand) // function that calculates the Blackjack score of a hand
 {
 	short score=0,numaces=0;
 	short len=hand.size();
 	for(int i=0;i<len;i++)
 	{
-		if(hand[i].GetPower()!=1)score+=hand[i].GetPower();
+		if(hand[i].GetPower()!=1)score+=hand[i].GetPower(); // ace is 11 or 1 if the score is above 21
 		else
 		{
 			numaces++;
 			score+=11;
 		}
 	}
-	while(numaces>0 && score>21)
+	while(numaces>0 && score>21) // score reductor if it is above 21
 	{
 		score-=10;
 		numaces--;
 	}
 	return score;
 }
-void PrintHand(vector<Cards> hand)
+void PrintHand(vector<Cards> hand) // hand and score of the hand printer
 {
 	short len=hand.size();
 	for(int i=0;i<len;i++)cout<<hand[i]<<" ";
 	cout<<endl;
 	cout<<"Handscore is:"<<Calcscore(hand)<<endl;
 }
-bool IsPair(vector<Cards> hand)
+bool IsPair(vector<Cards> hand) // binary check for pair in hand since the is a pair bet
 {
 	if(hand[0].GetName()==hand[1].GetName())return 1;
 	else return 0;
 }
-short PrintStatement(vector<Cards> hand,vector<Cards> dhand)
+void PrintStatement(vector<Cards> hand,vector<Cards> dhand) // interface statement print
 {
-	if(dhand[0].GetName()=='A')
+	if(dhand[0].GetName()=='A') // if the dealer has ace players can bet on insurance 2 to 1
 	{
 		cout<<"Press 1-Hit ; 2-Stand ; 3-Double ; 4-Insurance"<<endl;
-		return 4;
 	}
 
-	if(dhand[0].GetName()!='A')
+	if(dhand[0].GetName()!='A') // otherwise they can surrender and get half of their money
 	{
 		cout<<"Press 1-Hit ; 2-Stand ; 3-Double ; 4-Surrender"<<endl;
-		return 4;
 	}	
 }
-void war(vector<Cards>your_hand,vector<Cards>dealer_hand,double &bet,double &warbet,double &money)
+void war(vector<Cards>your_hand,vector<Cards>dealer_hand,double &bet,double &warbet,double &money) // Blackjack war func
 {
 	PrintHand(dealer_hand);
 	PrintHand(your_hand);
-	if(Calcscore(your_hand)>Calcscore(dealer_hand))
+	if(Calcscore(your_hand)>Calcscore(dealer_hand)) // the war is won only if the first player card is bigger than the dealer
 	{
-		char temp;
+		char temp; // the ace counts as 1
 		cout<<"You win the war,press y to bet the profit,n to take it."<<endl;
 		cin>>temp;
-		if(temp=='y'|| temp=='Y')
+		if(temp=='y'|| temp=='Y') // player has choice between betting the profit or taking it
 		{
 			bet+=warbet;
 			money+=warbet;
@@ -172,24 +170,24 @@ void war(vector<Cards>your_hand,vector<Cards>dealer_hand,double &bet,double &war
 	system("pause");
 	system("cls");
 }
-void play(vector<Cards> &deck,vector<Cards>	&your_hand,vector<Cards> &dealer_hand,double &bet,double &money,short &temp,double &insbet,bool &surr)
+void choice(vector<Cards> &deck,vector<Cards> &your_hand,vector<Cards> &dealer_hand,double &bet,double &money,short &temp,double &insbet,bool &surr)
 {
-	int templimit=PrintStatement(your_hand,dealer_hand);
+	PrintStatement(your_hand,dealer_hand); // function doing things depending on player's choices
 	cin>>temp;
-	while(temp<1 || temp>templimit)
+	while(temp<1 || temp>4) // validation
 	{
 		cin>>temp;	
 	}
 	system("cls");
 	switch(temp)
 	{
-		case 1:
+		case 1: // if the player hits he takes cards
 			your_hand.push_back(deck.back());
 			deck.pop_back();
 			PrintHand(dealer_hand);
 			PrintHand(your_hand);
 			break;
-		case 3:
+		case 3: // if the player doubles, he hits once with doubled bet
 			your_hand.push_back(deck.back());
 			deck.pop_back();
 			PrintHand(dealer_hand);
@@ -198,7 +196,7 @@ void play(vector<Cards> &deck,vector<Cards>	&your_hand,vector<Cards> &dealer_han
 			bet*=2;
 			temp=2;
 			break;
-		case 4:
+		case 4: // if the player wants an Insurance, he bets money on it
 			PrintHand(dealer_hand);
 			PrintHand(your_hand);
 			if(dealer_hand[0].GetName()=='A')
@@ -218,20 +216,20 @@ void play(vector<Cards> &deck,vector<Cards>	&your_hand,vector<Cards> &dealer_han
 	temp=2;
 	}		
 }
-void wincond(vector<Cards>	&your_hand,vector<Cards> &dealer_hand,double &insbet,double &money,bool &winner,double &bet)
+void wincond(vector<Cards>	&your_hand,vector<Cards> &dealer_hand,double &insbet,double &money,bool &winner,double &bet) //calculates winnings 
 {
-		if(Calcscore(dealer_hand)==21)
+		if(Calcscore(dealer_hand)==21) // Insurance pays 2 to 1
 		{
 			insbet*=2;
 			money+=insbet;
 		}
-		if(Calcscore(dealer_hand)>21 || (Calcscore(dealer_hand)<Calcscore(your_hand) && Calcscore(dealer_hand)<21))
-			{
+		if(Calcscore(dealer_hand)>21 || (Calcscore(dealer_hand)<Calcscore(your_hand) && Calcscore(dealer_hand)<21)) 
+			{  // player wins if the dealer busts or he has more points than the dealer
 				cout<<"You win!"<<endl;
 				winner=1;
 				bet*=2;
 			}
-		else if(Calcscore(dealer_hand)==Calcscore(your_hand))
+		else if(Calcscore(dealer_hand)==Calcscore(your_hand) && Calcscore(your_hand)<=21) // if the points are even there is a tie
 			{
 				cout<<"Tie!"<<endl;
 				winner=1;
@@ -243,7 +241,7 @@ void wincond(vector<Cards>	&your_hand,vector<Cards> &dealer_hand,double &insbet,
 				bet=0;
 			}
 }
-void draw(short decknum,vector<Cards> &deck,double &bet,double &money,double &pairbet,double &warbet)
+void play(short decknum,vector<Cards> &deck,double &bet,double &money,double &pairbet,double &warbet) // function which leads the game
 {
 	vector<Cards>your_hand;
 	vector<Cards>dealer_hand;
@@ -251,25 +249,25 @@ void draw(short decknum,vector<Cards> &deck,double &bet,double &money,double &pa
 	short temp=0;
 	bool winner=0,surr=0;
 	double insbet=0;	
-	money-=bet;money-=pairbet;money-=warbet;
-	while(!winner)
+	money-=bet;money-=pairbet;money-=warbet; // we put the bets on the table
+	while(!winner) // the bool var winner is a replace for the break word
 	{
-		if(deck.empty())
+		if(deck.empty() || deck.size()<=38) // if there is a deck made by 38 aces player will have 21 and the dealer 17, both players can use more than that number of cards
 		{
-			MakeDeck(decknum*52,deck);
+			MakeDeck(decknum*52,deck); // generates the selected from user number of decks
 			Shuffle(deck);
 		}
-		if(bet==69 || bet==420)
+		if(bet==69 || bet==420) // secret bets which see the deck
 		{
 			cout<<"Cheat bet activated.Here is the deck!"<<endl;
 			PrintDeck(deck);
 			system("pause");
 		} 
-		your_hand.push_back(deck.back());
+		your_hand.push_back(deck.back()); // each player takes card and the deck loses one
 		deck.pop_back();
 		dealer_hand.push_back(deck.back());
 		deck.pop_back();
-		if(warbet!=0)
+		if(warbet!=0) // if the user has bet on war there is war
 		{
 			war(your_hand,dealer_hand,bet,warbet,money);
 		}
@@ -277,7 +275,7 @@ void draw(short decknum,vector<Cards> &deck,double &bet,double &money,double &pa
 		deck.pop_back();
 		PrintHand(dealer_hand);
 		PrintHand(your_hand);
-		if(pairbet!=0)
+		if(pairbet!=0) // same as warbet
 		{
 			if(IsPair(your_hand))
 			{
@@ -289,7 +287,7 @@ void draw(short decknum,vector<Cards> &deck,double &bet,double &money,double &pa
 			}
 			else cout<<"You lost your pair bet!"<<endl;
 		}
-		if(Calcscore(your_hand)==21)
+		if(Calcscore(your_hand)==21 && dealer_hand[0].GetPower()!=1 && dealer_hand[0].GetPower()!=10) // if the player has 21 and dealer has no chance of having 21 in 2 cards there is a Blackjack
 		{
 			cout<<"Blackjack! You win!"<<endl;
 			winner=1;
@@ -298,17 +296,17 @@ void draw(short decknum,vector<Cards> &deck,double &bet,double &money,double &pa
 		}
 		while(temp!=2)
 		{
-			play(deck,your_hand,dealer_hand,bet,money,temp,insbet,surr)	;
+			choice(deck,your_hand,dealer_hand,bet,money,temp,insbet,surr);
 		}
-		if(surr)
+		if(surr) // surrender option
 		{
-			cout<<"You Surendered!"<<endl;
+			cout<<"You Surrendered!"<<endl;
 			surr=1;
 			winner=1;
 			bet=bet/2;
 			break;
 		}
-		if(Calcscore(your_hand)>21)
+		if(Calcscore(your_hand)>21) // if abovev 21 player loses
 		{
 			cout<<"Bust! You lose!"<<endl;
 			if(insbet!=0)
@@ -316,7 +314,7 @@ void draw(short decknum,vector<Cards> &deck,double &bet,double &money,double &pa
 				dealer_hand.push_back(deck.back());
 				deck.pop_back();
 				PrintHand(dealer_hand);
-				if(Calcscore(dealer_hand)==21)
+				if(Calcscore(dealer_hand)==21) // bet even in that case his insurance bet still exist
 				{
 					insbet*=2;
 					money+=insbet;
@@ -326,7 +324,7 @@ void draw(short decknum,vector<Cards> &deck,double &bet,double &money,double &pa
 			bet=0;
 			break;
 		}
-		while(Calcscore(dealer_hand)<=16)
+		while(Calcscore(dealer_hand)<=16) // The dealer must hit on 16 or below and stand on 17 or above
 		{
 			system("cls");
 			dealer_hand.push_back(deck.back());
@@ -334,7 +332,7 @@ void draw(short decknum,vector<Cards> &deck,double &bet,double &money,double &pa
 			PrintHand(dealer_hand);
 			PrintHand(your_hand);
 		}
-		wincond(your_hand,dealer_hand,insbet,money,winner,bet);
+		wincond(your_hand,dealer_hand,insbet,money,winner,bet); // check who wins
 		insbet=0;
 		temp=0;
 	}
@@ -346,8 +344,8 @@ int main()
 	char c;
 	double bet=0,pairbet=0,warbet=0;
 	double money=1000;
-	short decknum=1;
-	cout<<"How many decks you wanna play with?"<<endl;
+	short decknum;
+	cout<<"How many decks you wanna play with?"<<endl; // the player choices how many cards are there
 	cin>>decknum;
 	vector<Cards>deck;
 	while(new_game)
@@ -356,18 +354,18 @@ int main()
 		cout<<"Bet money for new game,0 to exit"<<endl;
 		cout<<"Current money: "<<money<<endl;
 		cin>>bet;
-		if(bet==0)
+		if(bet==0 || bet >=money)
 		{
 			new_game=0;
 			break;
 		}
-		cout<<"Press y to bet for war,any key for no bet"<<endl;
+		cout<<"Press y to bet for war,any key for no bet"<<endl; // the pair bet and the war bet are the same as the main one
 		cin>>c;
 		if(c=='y' || c=='Y')warbet=bet;
 		cout<<"Press y to bet for pair,any key for no bet"<<endl;
 		cin>>c;
 		if(c=='y' || c=='Y')pairbet=bet;
-		draw(decknum,deck,bet,money,pairbet,warbet);
+		play(decknum,deck,bet,money,pairbet,warbet);
 	}
 	return 0;
 }
