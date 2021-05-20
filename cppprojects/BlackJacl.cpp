@@ -250,7 +250,7 @@ void play(short decknum,vector<Cards> &deck,double &bet,double &money,double &pa
 	bool winner=0,surr=0;
 	double insbet=0;	
 	money-=bet;money-=pairbet;money-=warbet; // we put the bets on the table
-	while(!winner) // the bool var winner is a replace for the break word
+	while(!winner) // we play till there is a winner
 	{
 		if(deck.empty() || deck.size()<=38) // if there is a deck made by 38 aces player will have 21 and the dealer 17, both players can use more than that number of cards
 		{
@@ -306,7 +306,7 @@ void play(short decknum,vector<Cards> &deck,double &bet,double &money,double &pa
 			bet=bet/2;
 			break;
 		}
-		if(Calcscore(your_hand)>21) // if abovev 21 player loses
+		if(Calcscore(your_hand)>21) // if above 21 player loses
 		{
 			cout<<"Bust! You lose!"<<endl;
 			if(insbet!=0)
@@ -318,6 +318,7 @@ void play(short decknum,vector<Cards> &deck,double &bet,double &money,double &pa
 				{
 					insbet*=2;
 					money+=insbet;
+					insbet=0;
 				}
 			}
 			winner=1;
