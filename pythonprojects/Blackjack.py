@@ -207,8 +207,7 @@ def main_loop(number_decks=0, money=0):  # main operating function
                     money += bet * 2.5
                     break  # if the player has 21 and dealer has no chance of having 21 in 2 cards there is a Blackjack
 
-                decision = player_decision(dealer_hand, player_hand,
-                                           deck)  # the house wins because the player has a choice
+                decision = player_decision(dealer_hand, player_hand, deck)  # variable for player's decision
                 if decision[1]:
                     money -= bet
                     bet *= 2
